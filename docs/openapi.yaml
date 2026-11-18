@@ -1,0 +1,329 @@
+
+openapi: 3.1.0
+
+info:
+  title: API Inventaris Barang
+  description: RESTful API untuk mengelola produk dan kategori
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local Development
+
+tags:
+  - name: Products
+    description: Pengelolaan data produk
+  - name: Categories
+    description: Pengelolaan data kategori
+
+paths:
+
+  /api/v1/products:
+    get:
+      tags:
+        - Products
+      summary: Mengambil seluruh produk
+      responses:
+        '200':
+          description: Daftar produk berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+
+    post:
+      tags:
+        - Products
+      summary: Menambahkan produk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Produk berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '422':
+          description: Validasi gagal
+
+  /api/v1/products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+
+    get:
+      tags:
+        - Products
+      summary: Mengambil detail produk
+      responses:
+        '200':
+          description: Detail produk berhasil ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Produk tidak ditemukan
+
+    put:
+      tags:
+        - Products
+      summary: Memperbarui produk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Produk berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Produk tidak ditemukan
+        '422':
+          description: Validasi gagal
+
+    delete:
+      tags:
+        - Products
+      summary: Menghapus produk
+      responses:
+        '204':
+          description: Produk berhasil dihapus
+        '404':
+          description: Produk tidak ditemukan
+
+  /api/v1/categories:
+    get:
+      tags:
+        - Categories
+      summary: Mengambil seluruh kategori
+      responses:
+        '200':
+          description: Daftar kategori berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+
+    post:
+      tags:
+        - Categories
+      summary: Menambahkan kategori
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '201':
+          description: Kategori berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '422':
+          description: Validasi gagal
+
+  /api/v1/categories/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+
+    get:
+      tags:
+        - Categories
+      summary: Mengambil detail kategori
+      responses:
+        '200':
+          description: Detail kategori ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '404':
+          description: Kategori tidak ditemukan
+
+    put:
+      tags:
+        - Categories
+      summary: Memperbarui kategori
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '200':
+          description: Kategori berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '404':
+          description: Kategori tidak ditemukan
+        '422':
+          description: Validasi gagal
+
+    delete:
+      tags:
+        - Categories
+      summary: Menghapus kategori
+      responses:
+        '204':
+          description: Kategori berhasil dihapus
+        '404':
+          description: Kategori tidak ditemukan
+
+components:
+  schemas:
+
+    ProductInput:
+      type: object
+      required:
+        - category_id
+        - name
+        - price
+        - stock
+      properties:
+        category_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laptop Lenovo
+        price:
+          type: number
+          minimum: 0
+          example: 7500000
+        stock:
+          type: integer
+          minimum: 0
+          example: 10
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        category_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laptop Lenovo
+        price:
+          type: number
+          example: 7500000
+        stock:
+          type: integer
+          example: 10
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CategoryInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Elektronik
+        description:
+          type: string
+          example: Perangkat elektronik
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Elektronik
+        description:
+          type: string
+          example: Perangkat elektronik
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Berhasil
+        data:
+          $ref: '#/components/schemas/Product'
+
+    ProductListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Berhasil
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+
+    CategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Berhasil
+        data:
+          $ref: '#/components/schemas/Category'
+
+    CategoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Berhasil
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
